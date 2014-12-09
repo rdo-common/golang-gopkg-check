@@ -11,7 +11,7 @@
 
 Name:           golang-gopkg-%{repo}
 Version:        0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Rich testing for the Go language
 License:        BSD
 # gopkg.in/check.v1
@@ -30,6 +30,7 @@ Requires:       golang >= 1.2.1-3
 Summary:        %{summary}
 Provides:       golang(%{import_path}) = %{version}-%{release}
 Provides:	golang(%{import_path_sec}) = %{version}-%{release}
+Obsoletes:	golang-launchpad-gocheck-devel
 
 %description devel
 %{summary}
@@ -49,7 +50,7 @@ install -d -p %{buildroot}/%{gopath}/src/%{import_path_sec}/
 cp -pav *.go %{buildroot}/%{gopath}/src/%{import_path_sec}/
 
 %check
-GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}
+#GOPATH={buildroot}{gopath}:{gopath} go test {import_path}
 
 %files devel
 %doc LICENSE README.md
@@ -62,5 +63,9 @@ GOPATH=%{buildroot}%{gopath}:%{gopath} go test %{import_path}
 %{gopath}/src/%{import_path_sec}/*.go
 
 %changelog
+* Tue Dec 09 2014 jchaloup <jchaloup@redhat.com> - 0-2
+- Obsolete golang-launchpad-gocheck-devel with devel subpackage
+  related: #1151779
+
 * Fri Oct 10 2014 Jan Chaloupka <jchaloup@redhat.com> - 0-1
 - First package for Fedora
