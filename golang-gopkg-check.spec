@@ -16,7 +16,7 @@
 
 Name:           golang-gopkg-%{repo}
 Version:        0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Rich testing for the Go language
 License:        BSD
 # gopkg.in/check.v1
@@ -39,6 +39,7 @@ Requires:       golang >= 1.2.1-3
 Summary:        %{summary}
 Provides:       golang(%{import_path}) = %{version}-%{release}
 Provides:	golang(%{import_path_sec}) = %{version}-%{release}
+Provides:	golang(%{mimport_path}) = %{version}-%{release}
 Obsoletes:	golang-launchpad-gocheck-devel
 
 %description devel
@@ -75,6 +76,10 @@ cp -pav *.go %{buildroot}/%{gopath}/src/%{mimport_path}/
 %{gopath}/src/github.com/motain/gocheck
 
 %changelog
+* Tue Jan 13 2015 jchaloup <jchaloup@redhat.com> - 0-4
+- Add github.com/motain/gocheck into Provides
+  related: #1151779
+
 * Tue Jan 13 2015 jchaloup <jchaloup@redhat.com> - 0-3
 - Add github.com/motain/gocheck into devel subpackage
   related: #1151779
