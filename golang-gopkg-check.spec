@@ -16,7 +16,7 @@
 
 Name:           golang-gopkg-%{repo}
 Version:        0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Rich testing for the Go language
 License:        BSD
 # gopkg.in/check.v1
@@ -76,6 +76,9 @@ cp -pav *.go %{buildroot}/%{gopath}/src/%{mimport_path}/
 %{gopath}/src/github.com/motain/gocheck
 
 %changelog
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Tue Jan 13 2015 jchaloup <jchaloup@redhat.com> - 0-4
 - Add github.com/motain/gocheck into Provides
   related: #1151779
