@@ -44,7 +44,7 @@
 
 Name:           golang-gopkg-%{repo}
 Version:        0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Rich testing for the Go language
 License:        BSD
 URL:            https://%{provider_prefix}
@@ -195,6 +195,9 @@ gotest %{import_path}
 %endif
 
 %changelog
+* Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 0-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
 * Wed Jul 29 2015 jchaloup <jchaloup@redhat.com> - 0-6
 - Update of spec file to spec-2.0
   resolves: #1248138
