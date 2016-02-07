@@ -33,23 +33,17 @@
 # https://github.com/go-check/check
 %global provider_prefix %{provider}.%{provider_tld}/%{project}/%{repo}
 %global import_path     gopkg.in/check.v1
-%global import_path_sec launchpad.net/gocheck
-%global commit          91ae5f88a67b14891cfd43895b01164f6c120420
+%global import_path_sec github.com/go-check/check
+%global commit          4f90aeace3a26ad7021961c297b22c42160c7b25
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
-# github.com/motain/gocheck, cloned from github.com/go-check/check on Oct 23, 2013
-%global mcommit         10bfe0586b48cbca10fe6c43d6e18136f25f8c0c
-%global mscommit        %(c=%{mcommit}; echo ${c:0:7})
-%global mimport_path    github.com/motain/gocheck
-
 Name:           golang-gopkg-%{repo}
-Version:        0
-Release:        7%{?dist}
+Version:        1
+Release:        8%{?dist}
 Summary:        Rich testing for the Go language
 License:        BSD
 URL:            https://%{provider_prefix}
-Source0:        https://%{provider_prefix}/archive/%{mcommit}/%{repo}-%{mscommit}.tar.gz
-Source1:        https://%{provider_prefix}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
+Source0:        https://%{provider_prefix}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
 Obsoletes:      golang-launchpad-gocheck
 
 # If go_arches not defined fall through to implicit golang archs
@@ -79,7 +73,6 @@ BuildArch:     noarch
 
 Provides:      golang(%{import_path}) = %{version}-%{release}
 Provides:      golang(%{import_path_sec}) = %{version}-%{release}
-Provides:      golang(%{mimport_path}) = %{version}-%{release}
 Obsoletes:     golang-launchpad-gocheck-devel
 
 %description devel
@@ -122,8 +115,7 @@ providing packages with %{import_path} prefix.
 %endif
 
 %prep
-%setup -n %{repo}-%{mcommit} -q
-%setup -n %{repo}-%{commit} -q -T -b 1
+%setup -n %{repo}-%{commit} -q
 
 %build
 
@@ -141,15 +133,6 @@ for file in $(find . -iname "*.go" \! -iname "*_test.go") ; do
     cp $file %{buildroot}/%{gopath}/src/%{import_path_sec}/$file
     echo "%%{gopath}/src/%%{import_path_sec}/$file" >> devel.file-list
 done
-pushd ../%{repo}-%{mcommit}
-install -d -p %{buildroot}/%{gopath}/src/%{mimport_path}/
-# find all *.go but no *_test.go files and generate devel.file-list
-for file in $(find . -iname "*.go" \! -iname "*_test.go") ; do
-    install -d -p %{buildroot}/%{gopath}/src/%{mimport_path}/$(dirname $file)
-    cp $file %{buildroot}/%{gopath}/src/%{mimport_path}/$file
-    echo "%%{gopath}/src/%%{mimport_path}/$file" >> ../%{repo}-%{commit}/devel.file-list
-done
-popd
 %endif
 
 # testing files for this project
@@ -185,7 +168,6 @@ gotest %{import_path}
 %doc README.md
 %dir %{gopath}/src/%{import_path}
 %dir %{gopath}/src/%{import_path_sec}
-%dir %{gopath}/src/%{mimport_path}
 %endif
 
 %if 0%{?with_unit_test}
@@ -195,6 +177,10 @@ gotest %{import_path}
 %endif
 
 %changelog
+* Sun Feb 07 2016 Antonio Murdaca <runcom@fedoraproject.org> - 1-8
+- Update check@4f90aea from v1 branch
+- cleanup spec
+
 * Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 0-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
