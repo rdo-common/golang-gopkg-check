@@ -178,8 +178,7 @@ gotest %{import_path}
 
 %changelog
 * Sun Feb 07 2016 Antonio Murdaca <runcom@fedoraproject.org> - 1-8
-- Update check@4f90aea from v1 branch
-- cleanup spec
+- rebuilt
 
 * Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 0-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
