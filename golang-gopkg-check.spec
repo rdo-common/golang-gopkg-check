@@ -39,7 +39,7 @@
 
 Name:           golang-gopkg-%{repo}
 Version:        1
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Rich testing for the Go language
 License:        BSD
 URL:            https://%{provider_prefix}
@@ -177,6 +177,9 @@ gotest %{import_path}
 %endif
 
 %changelog
+* Mon Feb 22 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1-9
+- https://fedoraproject.org/wiki/Changes/golang1.6
+
 * Sun Feb 07 2016 Antonio Murdaca <runcom@fedoraproject.org> - 1-8
 - rebuilt
 
