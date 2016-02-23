@@ -19,13 +19,6 @@
 %global debug_package   %{nil}
 %endif
 
-%define copying() \
-%if 0%{?fedora} >= 21 || 0%{?rhel} >= 7 \
-%license %{*} \
-%else \
-%doc %{*} \
-%endif
-
 %global provider        github
 %global provider_tld    com
 %global project         go-check
@@ -33,31 +26,30 @@
 # https://github.com/go-check/check
 %global provider_prefix %{provider}.%{provider_tld}/%{project}/%{repo}
 %global import_path     gopkg.in/check.v1
-%global import_path_sec github.com/go-check/check
+%global import_path_sec launchpad.net/gocheck
 %global commit          4f90aeace3a26ad7021961c297b22c42160c7b25
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
+%global gimport_path    github.com/go-check/check
+
+# github.com/motain/gocheck, cloned from github.com/go-check/check on Oct 23, 2013
+%global mcommit         10bfe0586b48cbca10fe6c43d6e18136f25f8c0c
+%global mscommit        %(c=%{mcommit}; echo ${c:0:7})
+%global mimport_path    github.com/motain/gocheck
 
 Name:           golang-gopkg-%{repo}
 Version:        1
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Rich testing for the Go language
 License:        BSD
 URL:            https://%{provider_prefix}
-Source0:        https://%{provider_prefix}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
+Source0:        https://%{provider_prefix}/archive/%{mcommit}/%{repo}-%{mscommit}.tar.gz
+Source1:        https://%{provider_prefix}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
 Obsoletes:      golang-launchpad-gocheck
 
-# If go_arches not defined fall through to implicit golang archs
-%if 0%{?go_arches:1}
-ExclusiveArch:  %{go_arches}
-%else
-ExclusiveArch:   %{ix86} x86_64 %{arm}
-%endif
-# If gccgo_arches does not fit or is not defined fall through to golang
-%ifarch 0%{?gccgo_arches}
-BuildRequires:   gcc-go >= %{gccgo_min_vers}
-%else
-BuildRequires:   golang
-%endif
+# e.g. el6 has ppc64 arch without gcc-go, so EA tag is required
+ExclusiveArch:  %{?go_arches:%{go_arches}}%{!?go_arches:%{ix86} x86_64 %{arm}}
+# If go_compiler is not set to 1, there is no virtual provide. Use golang instead.
+BuildRequires:  %{?go_compiler:compiler(go-compiler)}%{!?go_compiler:golang}
 
 %description
 %{summary}
@@ -70,9 +62,10 @@ BuildArch:     noarch
 %if 0%{?with_check}
 %endif
 
-
 Provides:      golang(%{import_path}) = %{version}-%{release}
 Provides:      golang(%{import_path_sec}) = %{version}-%{release}
+Provides:      golang(%{mimport_path}) = %{version}-%{release}
+Provides:      golang(%{gimport_path}) = %{version}-%{release}
 Obsoletes:     golang-launchpad-gocheck-devel
 
 %description devel
@@ -86,18 +79,8 @@ building other packages which use import path with
 %if 0%{?with_unit_test}
 %package unit-test
 Summary:         Unit tests for %{name} package
-# If go_arches not defined fall through to implicit golang archs
-%if 0%{?go_arches:1}
-ExclusiveArch:  %{go_arches}
-%else
-ExclusiveArch:   %{ix86} x86_64 %{arm}
-%endif
-# If gccgo_arches does not fit or is not defined fall through to golang
-%ifarch 0%{?gccgo_arches}
-BuildRequires:   gcc-go >= %{gccgo_min_vers}
-%else
-BuildRequires:   golang
-%endif
+# If go_compiler is not set to 1, there is no virtual provide. Use golang instead.
+BuildRequires:  %{?go_compiler:compiler(go-compiler)}%{!?go_compiler:golang}
 
 %if 0%{?with_check}
 #Here comes all BuildRequires: PACKAGE the unit tests
@@ -115,7 +98,8 @@ providing packages with %{import_path} prefix.
 %endif
 
 %prep
-%setup -n %{repo}-%{commit} -q
+%setup -n %{repo}-%{mcommit} -q
+%setup -n %{repo}-%{commit} -q -T -b 1
 
 %build
 
@@ -124,16 +108,32 @@ providing packages with %{import_path} prefix.
 %if 0%{?with_devel}
 install -d -p %{buildroot}/%{gopath}/src/%{import_path}/
 install -d -p %{buildroot}/%{gopath}/src/%{import_path_sec}/
+install -d -p %{buildroot}/%{gopath}/src/%{gimport_path}/
 # find all *.go but no *_test.go files and generate devel.file-list
 for file in $(find . -iname "*.go" \! -iname "*_test.go") ; do
     install -d -p %{buildroot}/%{gopath}/src/%{import_path}/$(dirname $file)
     cp $file %{buildroot}/%{gopath}/src/%{import_path}/$file
     echo "%%{gopath}/src/%%{import_path}/$file" >> devel.file-list
+
     install -d -p %{buildroot}/%{gopath}/src/%{import_path_sec}/$(dirname $file)
     cp $file %{buildroot}/%{gopath}/src/%{import_path_sec}/$file
     echo "%%{gopath}/src/%%{import_path_sec}/$file" >> devel.file-list
+
+    install -d -p %{buildroot}/%{gopath}/src/%{gimport_path}/$(dirname $file)
+    cp $file %{buildroot}/%{gopath}/src/%{gimport_path}/$file
+    echo "%%{gopath}/src/%%{gimport_path}/$file" >> devel.file-list
 done
 %endif
+
+pushd ../%{repo}-%{mcommit}
+install -d -p %{buildroot}/%{gopath}/src/%{mimport_path}/
+# find all *.go but no *_test.go files and generate devel.file-list
+for file in $(find . -iname "*.go" \! -iname "*_test.go") ; do
+    install -d -p %{buildroot}/%{gopath}/src/%{mimport_path}/$(dirname $file)
+    cp $file %{buildroot}/%{gopath}/src/%{mimport_path}/$file
+    echo "%%{gopath}/src/%%{mimport_path}/$file" >> ../%{repo}-%{commit}/devel.file-list
+done
+popd
 
 # testing files for this project
 %if 0%{?with_unit_test}
@@ -148,35 +148,43 @@ done
 
 %check
 %if 0%{?with_check} && 0%{?with_unit_test} && 0%{?with_devel}
-%ifarch 0%{?gccgo_arches}
-function gotest { %{gcc_go_test} "$@"; }
+%if ! 0%{?with_bundled}
+export GOPATH=%{buildroot}/%{gopath}:%{gopath}
 %else
-%if 0%{?golang_test:1}
-function gotest { %{golang_test} "$@"; }
-%else
-function gotest { go test "$@"; }
-%endif
+export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 %endif
 
-export GOPATH=%{buildroot}/%{gopath}:%{gopath}
-gotest %{import_path}
+%if ! 0%{?gotest:1}
+%global gotest go test
 %endif
+
+%gotest %{import_path}
+%endif
+
+#define license tag if not already defined
+%{!?_licensedir:%global license %doc}
 
 %if 0%{?with_devel}
 %files devel -f devel.file-list
-%copying LICENSE
+%license LICENSE
 %doc README.md
 %dir %{gopath}/src/%{import_path}
 %dir %{gopath}/src/%{import_path_sec}
+%dir %{gopath}/src/%{gimport_path}
 %endif
 
 %if 0%{?with_unit_test}
 %files unit-test -f unit-test.file-list
-%copying LICENSE
+%license LICENSE
 %doc README.md
 %endif
 
 %changelog
+* Tue Feb 23 2016 jchaloup <jchaloup@redhat.com> - 1-10
+- Update spec file to spec 2.1
+  support 4 import path prefixes
+  related: #1248138
+
 * Mon Feb 22 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1-9
 - https://fedoraproject.org/wiki/Changes/golang1.6
 
