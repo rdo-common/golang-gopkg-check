@@ -38,7 +38,7 @@
 
 Name:           golang-gopkg-%{repo}
 Version:        1
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Rich testing for the Go language
 License:        BSD
 URL:            https://%{provider_prefix}
@@ -180,6 +180,9 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 %endif
 
 %changelog
+* Thu Jul 21 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1-11
+- https://fedoraproject.org/wiki/Changes/golang1.7
+
 * Tue Feb 23 2016 jchaloup <jchaloup@redhat.com> - 1-10
 - Update spec file to spec 2.1
   support 4 import path prefixes
