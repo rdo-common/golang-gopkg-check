@@ -6,11 +6,11 @@
 %global with_check 0
 %global with_unit_test 1
 %else
-%global with_devel 0
+%global with_devel 1
 %global with_bundled 0
 %global with_debug 0
 %global with_check 0
-%global with_unit_test 0
+%global with_unit_test 1
 %endif
 
 %if 0%{?with_debug}
@@ -38,7 +38,7 @@
 
 Name:           golang-gopkg-%{repo}
 Version:        1
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Rich testing for the Go language
 License:        BSD
 URL:            https://%{provider_prefix}
@@ -180,6 +180,10 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/Godeps/_workspace:%{gopath}
 %endif
 
 %changelog
+* Tue Aug 09 2016 jchaloup <jchaloup@redhat.com> - 1-12
+- Enable devel and unit-test for epel7
+  related: #1248138
+
 * Thu Jul 21 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1-11
 - https://fedoraproject.org/wiki/Changes/golang1.7
 
